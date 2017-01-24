@@ -84,7 +84,7 @@ task PrintAgentInfo() << {
 }
 // inject dtagent into test task JVM arguments
 task InjectAgent(dependsOn: DtStartTest) << {
-	test.jvmArgs '-agentpath:/opt/dynatrace-6.5/agent/lib64/libdtagent.so=name=Spring-Music-test,server=192.168.1.48,wait=5,optionTestRunIdJava=' + ${systemProperties.dtTestrunID}
+	test.jvmArgs '-agentpath:/opt/dynatrace-6.5/agent/lib64/libdtagent.so=name=Spring-Music-test,server=192.168.1.48,wait=5,optionTestRunIdJava=' + DtStartTest.testRunId
 }
 
 test.dependsOn InjectAgent
