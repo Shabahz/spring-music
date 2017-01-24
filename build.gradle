@@ -30,8 +30,9 @@ version = '1.0'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-ext.systemProperties= System.properties
+ext.systemProperties = System.properties
 println "System property dtTestrunID is ${systemProperties.dtTestrunID}"
+println "System property dtCollector is ${systemProperties.dtCollector}"
 
 repositories {
     mavenCentral()
@@ -85,7 +86,7 @@ task PrintAgentInfo() << {
 // inject dtagent into test task JVM arguments
 task InjectAgent {
         doLast {
-	    test.jvmArgs '-agentpath:/opt/dynatrace-6.5/agent/lib64/libdtagent.so=name=Spring-Music-test,server=192.168.1.48,wait=5,optionTestRunIdJava=' + "${systemProperties.dtTestrunID}"
+	    test.jvmArgs "-agentpath:/opt/dynatrace-6.5/agent/lib64/libdtagent.so=name=Spring-Music-test,server=" + "${systemProperties.dtCollector}" + ",wait=5,optionTestRunIdJava=" + "${systemProperties.dtTestrunID}"
         }
 }
 
