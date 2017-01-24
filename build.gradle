@@ -5,6 +5,7 @@ buildscript {
     }
 
     repositories {
+	    flatDir dirs: 'libs'
         jcenter()
         mavenCentral()
         maven { url "https://repo.spring.io/plugins-release" }
@@ -12,6 +13,7 @@ buildscript {
 
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath 'com.dynatrace.diagnostics.automation:gradle.plugin:6.5.0'
     }
 }
 
@@ -21,11 +23,15 @@ apply plugin: 'eclipse-wtp'
 apply plugin: 'idea'
 
 apply plugin: 'spring-boot'
+apply plugin: 'dynatrace-gradle-plugin'
 
 version = '1.0'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+ext.systemProperties= System.properties
+println "System property DdtTestrunID is ${systemProperties.DdtTestrunID}"
 
 repositories {
     mavenCentral()
@@ -73,6 +79,45 @@ dependencies {
     testCompile group: 'com.jayway.jsonpath', name: 'json-path-assert', version: '2.2.0'
 
 }
+task PrintAgentInfo() << {
+	print DtGetAgentInfo.agentName
+}
+// inject dtagent into test task JVM arguments
+task InjectAgent(dependsOn: DtStartTest) << {
+	test.jvmArgs '-agentpath:/opt/dynatrace-6.5/agent/lib64/libdtagent.so=name=Spring-Music-test,server=192.168.1.48,wait=5,optionTestRunIdJava=' + DtStartTest.testRunId
+}
+
+test.dependsOn InjectAgent
+
+
+dynaTrace {
+    username = 'admin'
+    password = 'admin'
+    serverUrl = 'https://192.168.1.48:8021'
+    profile = 'Spring-Music'
+    ignoreSSLErrors = true
+}
+
+DtGetAgentInfo {
+	infoForAgentByIndex = 0
+	//infoForAgentByName = 'someName'
+	
+	finalizedBy PrintAgentInfo
+}
+
+DtStartTest {
+	versionBuild = 1
+	versionMajor = 2
+	versionMinor = 3
+	versionRevision = 4
+	versionMilestone = 5
+	platform = 'Linux'
+	marker = 'marker'
+	category = 'unit'
+
+    addCustomProperty 'testset', 'unit-tests'
+}
+
 
 jar {
     baseName = "spring-music"
