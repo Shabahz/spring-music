@@ -21,6 +21,19 @@ public class Album {
     private String genre;
     private int trackCount;
     private String albumId;
+    private int processingTime;
+  
+     /**
+     * Just simulates some processing. time can be configured through bookstore.processingtime
+     */
+    public void doProcessing() {
+	  if(processingTime <= 0) processingTime = 1000;
+	  try {
+		java.lang.Thread.sleep(processingTime);
+	} catch (InterruptedException e) { 
+		// there should really be no problem wkth this :-)
+	}
+    }
 
     public Album() {
     }
