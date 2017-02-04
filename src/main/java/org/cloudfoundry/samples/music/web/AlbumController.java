@@ -17,7 +17,7 @@ public class AlbumController {
     private int processingTime;
 
      /**
-     * Just simulates some processing. time can be configured through bookstore.processingtime
+     * Just simulates some processing
      */
     public void doProcessing() {
           if(processingTime <= 0) processingTime = 10;
